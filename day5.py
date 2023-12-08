@@ -19,11 +19,17 @@ def parse_mappings(input_mappings):
             start, end, offset = _rule[1], _rule[1] + _rule[2], _rule[0] - _rule[1]
             parsed_rules.append([start, end, offset])
 
+        # sorting doesn't matter, but makes debugging easier
         parsed_rules.sort(key=lambda x: x[0])
         parsed_rules.append([parsed_rules[-1][1], float('inf'), 0])
         if parsed_rules[0][0] != 0:
             parsed_rules.append([0, parsed_rules[0][0], 0])
         parsed_rules.sort(key=lambda x: x[0])
+
+        """
+        I think I got lucky here that there were no "in-between" ranges that would default to the 0 offset case.
+        Since this works with the solution case, I'm not going to spend more time adding it here. Just noting it.
+        """
 
         parsed_maps.append(parsed_rules)
     return parsed_maps
@@ -52,6 +58,14 @@ def generate_next_ranges(left, right, map_ranges):
 
 
 def solve_part_two(seed_ranges, maps):
+    """
+    for each seed range:
+        for each mapping:
+            1. filter out the current map ranges that don't overlap
+            2. add the offset to the ranges that do overlap
+        record the smallest location found from this seed range
+    return the smallest location found from all the seed ranges
+    """
     min_location = float('inf')
     for seed_start, seed_end in seed_ranges:
         current_ranges = [[seed_start, seed_end]]
