@@ -29,7 +29,7 @@ def parse_mappings(input_mappings):
     return parsed_maps
 
 
-def can_enter_range(left, right, range_start, range_end):
+def are_ranges_overlapped(left, right, range_start, range_end):
     # 4 overlapping cases:
     #   case1           case2           case3           case4
     #  |----|       |-----|             |------|     |--------|
@@ -41,10 +41,10 @@ def can_enter_range(left, right, range_start, range_end):
     return case1 or case2 or case3 or case4
 
 
-def are_ranges_overlapped(left, right, map_ranges):
+def generate_next_ranges(left, right, map_ranges):
     next_ranges = []
     for range_start, range_end, offset in map_ranges:
-        if can_enter_range(left, right, range_start, range_end):
+        if are_ranges_overlapped(left, right, range_start, range_end):
             next_range_start = max(range_start, left) + offset
             next_range_end = min(range_end, right) + offset
             next_ranges.append([next_range_start, next_range_end])
@@ -59,7 +59,7 @@ def solve_part_two(seed_ranges, maps):
             next_ranges = []
             while current_ranges:
                 current_left, current_right = current_ranges.pop()
-                next_ranges += are_ranges_overlapped(current_left, current_right, map_ranges)
+                next_ranges += generate_next_ranges(current_left, current_right, map_ranges)
             current_ranges = next_ranges
         if not current_ranges:
             continue
